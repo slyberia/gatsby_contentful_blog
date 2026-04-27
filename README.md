@@ -1,64 +1,32 @@
-# Contentful Gatsby Starter Blog
+# Prompt Governance & Evaluation (local-first)
 
-Create a [Gatsby](http://gatsbyjs.com/) blog powered by [Contentful](https://www.contentful.com). This is a simplified version of the [Gatsby Contentful Starter](https://github.com/contentful-userland/gatsby-contentful-starter) which is maintained by our Community.
+Local-first dashboard built with Vite + React + TypeScript. Data never leaves the browser; everything is persisted in `localStorage` under `promptGov:v1`.
 
-![The index page of the starter blog](https://rawgit.com/contentful-userland/gatsby-contentful-starter/master/screenshot.jpg "The index page of the starter blog")
+## Commands
 
-Static sites are scalable, secure and have very little required maintenance. They come with a drawback though. Not everybody feels good editing files, building a project and uploading it somewhere. This is where Contentful comes into play.
+- `npm install`
+- `npm run dev` – start the dev server on port 4173
+- `npm run build` – typecheck + production build
+- `npm run test` – Vitest suite
+- `npm run typecheck` – strict TS check
 
-With Contentful and Gatsby you can connect your favorite static site generator with an API that provides an easy to use interface for people writing content and automate the publishing using services like [Travis CI](https://travis-ci.org/) or [Netlify](https://www.netlify.com/).
+## Routes
 
-## Features
+- `/` – dashboard and lint summary
+- `/about` – project context and safety notes
+- `/eval` – run the mock evaluator across prompts
+- `/new` – create a prompt
+- `/prompt/:id` – prompt detail + version history + evals
+- `/edit/:id` – edit a prompt (records a new snapshot)
+- `/import` – paste JSON to import (invalid JSON shows an inline error)
+- `/export` – copy the canonical JSON snapshot
 
-- Simple content model and structure. Easy to adjust to your needs.
-- Use the [synchronization feature](https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/synchronization) of our [Delivery API](https://www.contentful.com/developers/docs/references/content-delivery-api/).
-- Responsive/adaptive images via [gatsby-image](https://www.gatsbyjs.org/packages/gatsby-image/) and our [Images API](https://www.contentful.com/developers/docs/references/content-delivery-api/#/reference/synchronization/initial-synchronization-of-entries-of-a-specific-content-type).
+## Data model
 
-## Getting started
-
-See our [official Contentful getting started guide](https://www.contentful.com/developers/docs/tutorials/general/get-started/).
-
-### Get the source code and install dependencies.
-
-```
-$ git clone https://github.com/contentful/starter-gatsby-blog.git
-$ npm install
-```
-
-Or use the [Gatsby CLI](https://www.npmjs.com/package/gatsby-cli).
-
-```
-$ gatsby new contentful-starter-blog https://github.com/contentful/starter-gatsby-blog/
-```
-
-### Set up of the needed content model and create a configuration file
-
-This project comes with a Contentful setup command `npm run setup`.
-
-This command will ask you for a space ID, and access tokens for the Contentful Management and Delivery API and then import the needed content model into the space you define and write a config file (`./.contentful.json`).
-
-`npm run setup` automates that for you but if you want to do it yourself rename `.contentful.json.sample` to `.contentful.json` and add your configuration in this file.
-
-## Crucial Commands
-
-### `npm run dev`
-
-Run the project locally with live reload in development mode.
-
-### `npm run build`
-
-Run a production build into `./public`. The result is ready to be put on any static hosting you prefer.
-
-### `npm run serve`
-
-Spin up a production-ready server with your blog. Don't forget to build your page beforehand.
-
-## Deployment
-
-See the [official Contentful getting started guide](https://www.contentful.com/developers/docs/tutorials/general/get-started/).
-
-## Contribution
-
-Feel free to open pull requests to fix bugs. If you want to add features, please have a look at the [original version](https://github.com/contentful-userland/gatsby-contentful-starter). It is always open to contributions and pull requests.
-
-You can learn more about how Contentful userland is organized by visiting [our about repository](https://github.com/contentful-userland/about).
+- `schema_version`: `1.0`
+- storage key: `promptGov:v1`
+- export contract: `schema_version`, `exported_at`, `prompts`, `eval_reports`
+- migrations: registry runs on load; invalid or legacy shapes are repaired to 1.0
+- versioning: each save creates a snapshot with version bump + timestamp + change summary
+- lint: simple rubric surfaces errors/warnings in library and detail views
+- regression detection: pass → fail transitions are flagged in eval reports
